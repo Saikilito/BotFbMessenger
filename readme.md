@@ -68,5 +68,9 @@ Para esto puedes visitar el siguiente link
 ## Webhook
 Un Webhook es una manera de ser notificado cuando un evento ha ocurrido en tu aplicacion o la de un tercero. Es básicamente una solicitud POST que se envía a una URL específica. Esa URL está configurada para recibir el cuerpo de la solicitud POST y procesarla de alguna manera.
 
-by @Oscar Barajas Tavares
+## Ngrok
+Ngrok es una herramienta que nos permite exponer nuestro servidor local a internet demanera segura, es decir, crea un tunel sobre nuestro servidor local con una salida publica a internet, esto lo utilizaremos para que facebook pueda tener acceso a nuestro servidor mientras estamos desarrollando nuestro bot.
 
+Ngrok nos permitira usar dos tipos de tunel con http y https, para neustra aplicación facebook nos pedirá que usemos de tipo htpps.
+
+by @Oscar Barajas Tavares
