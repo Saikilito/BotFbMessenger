@@ -14,7 +14,6 @@ app.get('/', (req,res)=>{
 });
 
 app.get('/webhook',(req,res)=>{
-    console.log(req.body)
     if(req.query['hub.verify_token'] === 'botTest_token'){
         res.send(req.query['hub.challenge']);
     }
@@ -24,29 +23,95 @@ app.get('/webhook',(req,res)=>{
 });
 
 app.post('/webhook', (req,res)=>{
+    console.log(req.body)
     const webhook_event = req.body.entry[0];
     //Validemos si existe un mensaje dentro del paquete de datos
     if(webhook_event.messaging){
         webhook_event.messaging.forEach(ev =>{
-            console.log(ev);
-            handleMessage(ev);
+            //console.log("Evento",ev);
+            handleEvent(ev.sender.id, ev);
         });
     }
     res.sendStatus(200);
 });
 
-function handleMessage(e){
-    const senderId = e.sender.id;
-    const messageText = e.message.text;
+function handleEvent(senderId, event){
+    if(event.message){
+        handleMessage(senderId, event.message)
+    }else if(event.postback){
+        handlePostback(senderId, event.postback.payload);
+    }
+}
+
+function handleMessage(senderId, event){
+    if(event.text){
+        console.log(event.text)
+        defaultMessage(senderId)
+    }else if(event.attachments){
+        handleAttachments(senderId, event)
+    }
+}
+
+function defaultMessage(senderId){
     const messageData = {
-        recipient:{
-            id: senderId
+        "recipient":{
+            id:senderId
         },
-        message:{
-            text: messageText
+        "message":{
+            text:"Hola soy un Test Bot, y te invito a usar nuestro menu",
+            "quick_replies":[
+                {
+                    "content_type":"text",
+                    "title":"¿Deseas ordenar?",
+                    "payload":"ORDERS_PAYLOAD"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Acerca de",
+                    "payload":"ABOUT_PAYLOAD"
+                }
+            ]
         }
     }
+    senderActions(senderId);
     callSendApi(messageData)
+}
+
+function handleAttachments(senderId, ev){
+    let attachments_type = ev.attachments[0].type;
+    console.log(ev.attachments[0])
+    switch(attachments_type){
+        case "image":
+            console.log(attachments_type);
+        break;
+        case "video":
+            console.log(attachments_type);
+        break;
+        case "audio":
+            console.log(attachments_type);
+        break;
+        case "file":
+            console.log(attachments_type);
+        break;
+    }
+}
+
+function handlePostback(senderId, payload){
+    switch(payload){
+        case "GET_STARTED_TESTBOT":
+            console.log(payload)
+        break;
+    }
+}
+
+function senderActions(senderId){
+    const messageData = {
+        "recipient":{
+            "id": senderId
+        },
+        "sender_action":"typing_on"
+    }
+    callSendApi(messageData);
 }
 
 function callSendApi(response){
@@ -66,6 +131,14 @@ function callSendApi(response){
             console.log("Send Message")
         }
     })
+}
+
+function showPizzas(senderId){
+    const messageData = {
+        "recipient":{
+            "id":senderId
+        }
+    }
 }
 
 app.listen(3000,()=>{
